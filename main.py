@@ -1,5 +1,6 @@
 import argparse
 import sys
+import database as db
 
 parser = argparse.ArgumentParser(prog="what")
 
@@ -12,14 +13,40 @@ def stop_timer():
     print("ksif")
 
 
-def add_project():
-    print("new project!!")
+def new_project(a):
+    db.insert_project(a)
+
+
+def list_projects():
+    for p in db.find_projects():
+        print(p)
 
 
 parser.add_argument(
     "--start",
-    help="Starts a timer on a project",
+    help="starts a project like this: --start 'project name'",
     dest="start",
+    action="store_true",
+)
+
+parser.add_argument(
+    "--stop",
+    help="Stops the currently running timer.",
+    dest="stop",
+    action="store_true",
+)
+
+parser.add_argument(
+    "--new",
+    help="Add a new project like this: --new 'new project name'",
+    dest="new",
+    action="store_true",
+)
+
+parser.add_argument(
+    "--list",
+    help="Lists all projects currently in db.",
+    dest="list",
     action="store_true",
 )
 
@@ -40,4 +67,16 @@ if len(sys.argv) == 1:
     parser.print_help()
 
 if args.start:
-    start_timer(args.string)
+    if len(args.string) > 2:
+        start_timer(args.string)
+    else:
+        print("Name too short")
+if args.stop:
+    stop_timer()
+if args.new:
+    if len(args.string) > 2:
+        new_project(args.string)
+    else:
+        print("Name too short")
+if args.list:
+    list_projects()
