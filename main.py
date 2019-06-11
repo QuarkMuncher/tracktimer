@@ -1,21 +1,35 @@
 import argparse
+import sys
 
 parser = argparse.ArgumentParser(prog="what")
 
 
-def start_timer(a):
+def start_timer():
     print("fisk")
 
 
-def stop_timer(a):
-    print(a)
+def stop_timer():
+    print("ksif")
 
 
-FUNCTION_MAP = {"start": start_timer}
+def add_project():
+    print("new project!!")
 
-parser.add_argument("command", choices=FUNCTION_MAP.keys())
+
+parser.add_argument(
+    "--start",
+    help="Starts a timer on a project",
+    dest="start",
+    action="store_true",
+)
 
 args = parser.parse_args()
 
-func = FUNCTION_MAP[args.command]
-func()
+# print(args)
+# print(sys.argv[-1])
+
+if len(sys.argv) == 1:
+    parser.print_help()
+
+if args.start:
+    print("whoo")
