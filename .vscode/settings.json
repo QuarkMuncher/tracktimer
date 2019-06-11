@@ -1,0 +1,7 @@
+{
+    "python.pythonPath": "/home/sebastian/.local/share/virtualenvs/tracktimer-VVEU9VvN/bin/python",
+    "python.linting.pylintEnabled": false,
+    "python.linting.pylamaEnabled": true,
+    "python.linting.enabled": true,
+    "python.formatting.provider": "black"
+}
