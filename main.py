@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser(prog="what")
 
 
 def start_timer(a):
-    print(a)
+    db.start_timer(a)
 
 
 def stop_timer():
@@ -14,7 +14,7 @@ def stop_timer():
 
 
 def new_project(a):
-    db.insert_project(a)
+    print(db.insert_project(a))
 
 
 def list_projects():
@@ -67,16 +67,23 @@ if len(sys.argv) == 1:
     parser.print_help()
 
 if args.start:
-    if len(args.string) > 2:
-        start_timer(args.string)
-    else:
-        print("Name too short")
+    try:
+        if len(args.string) > 2:
+            start_timer(args.string)
+        else:
+            print("Name too short")
+    except Exception as e:
+        print(e)
+        parser.print_help()
 if args.stop:
     stop_timer()
 if args.new:
-    if len(args.string) > 2:
-        new_project(args.string)
-    else:
-        print("Name too short")
+    try:
+        if len(args.string) > 2:
+            new_project(args.string)
+        else:
+            print("Name too short")
+    except Exception:
+        parser.print_help()
 if args.list:
     list_projects()

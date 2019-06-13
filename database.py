@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 import uuid
+from time import time
 
-engine = create_engine("sqlite:///./lite.db", echo=True)
+engine = create_engine("sqlite:///./lite.db")
 
 meta = MetaData()
 
@@ -39,7 +40,6 @@ def project_exists(name):
     select_project = projects.select().where(projects.c.ProjectName == name)
     conn = engine.connect()
     result = conn.execute(select_project).fetchall()
-    print(result)
     if len(result) >= 1:
         return True
     else:
@@ -48,17 +48,46 @@ def project_exists(name):
 
 def insert_project(name):
     if project_exists(name):
-        print("Project already exists.")
+        return f"Project: {name} already exists."
     else:
         new_project = projects.insert().values(id=get_id(), ProjectName=name)
         conn = engine.connect()
         conn.execute(new_project)
+        return f"Project: {name} created"
 
 
-#
-# Below this comment there is currently being worked on a function
-# for starting a timer
-#
+def timer_running():
+    timer = timestamps.select().where(timestamps.c.end.is_(None))
+    conn = engine.connect()
+    result = conn.execute(timer).fetchall()
+    if len(result) > 1:
+        return True
+    else:
+        return False
 
-# def insert_start_timestamp(name):
-#     if project_exists(name):
+
+def start_timer(name):
+    try:
+        if not timer_running():
+            if project_exists(name):
+                select_project = projects.select().where(
+                    projects.c.ProjectName == name
+                )
+                conn = engine.connect()
+                result = conn.execute(select_project).fetchone()
+                ident, _ = result
+                if ident:
+                    insert_timestart = timestamps.insert().values(
+                        id=get_id(), begin=time(), ProjectID=ident
+                    )
+                    insert_timestart.compile(engine)
+                    conn = engine.connect()
+                    conn.execute(insert_timestart)
+                else:
+                    return "Unknown error"
+            else:
+                return "No such project"
+        else:
+            return "A timer is already running"
+    except Exception as e:
+        return f"Unknow error: {e}"
