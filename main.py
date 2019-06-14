@@ -6,11 +6,11 @@ parser = argparse.ArgumentParser(prog="what")
 
 
 def start_timer(a):
-    db.start_timer(a)
+    print(db.start_timer(a))
 
 
 def stop_timer():
-    print("ksif")
+    print(db.stop_timer())
 
 
 def new_project(a):

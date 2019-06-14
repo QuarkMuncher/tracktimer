@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 import uuid
 from time import time
+from datetime import timedelta
 
 engine = create_engine("sqlite:///./lite.db")
 
@@ -60,7 +61,7 @@ def timer_running():
     timer = timestamps.select().where(timestamps.c.end.is_(None))
     conn = engine.connect()
     result = conn.execute(timer).fetchall()
-    if len(result) > 1:
+    if len(result) > 0:
         return True
     else:
         return False
@@ -74,8 +75,7 @@ def start_timer(name):
                     projects.c.ProjectName == name
                 )
                 conn = engine.connect()
-                result = conn.execute(select_project).fetchone()
-                ident, _ = result
+                ident, _ = conn.execute(select_project).fetchone()
                 if ident:
                     insert_timestart = timestamps.insert().values(
                         id=get_id(), begin=time(), ProjectID=ident
@@ -83,6 +83,7 @@ def start_timer(name):
                     insert_timestart.compile(engine)
                     conn = engine.connect()
                     conn.execute(insert_timestart)
+                    return f"Timer for '{name}' started.'"
                 else:
                     return "Unknown error"
             else:
@@ -91,3 +92,24 @@ def start_timer(name):
             return "A timer is already running"
     except Exception as e:
         return f"Unknow error: {e}"
+
+
+def stop_timer():
+    try:
+        if timer_running():
+            current_time = time()
+            conn = engine.connect()
+            timer_started_at = timestamps.select().where(
+                timestamps.c.end.is_(None)
+            )
+            _, begin, _, _ = conn.execute(timer_started_at).fetchone()
+            timer_stop = (
+                timestamps.update()
+                .where(timestamps.c.end.is_(None))
+                .values(end=current_time)
+            )
+            conn.execute(timer_stop)
+            time_passed = str(timedelta(seconds=round(current_time - begin)))
+            return f"Timer stopped, {time_passed} has passed."
+    except Exception:
+        return "ERROR"
