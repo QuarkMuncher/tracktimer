@@ -113,3 +113,19 @@ def stop_timer():
             return f"Timer stopped, {time_passed} has passed."
     except Exception:
         return "ERROR"
+
+
+def report_range(begin, end):
+    try:
+
+        conn = engine.connect()
+        # Write querying of what to get.
+        select = (
+            timestamps.select()
+            .where(timestamps.c.begin < begin)
+            .where(timestamps.c.end > end)
+        )
+        result = conn.execute(select)
+
+    except Exception as identifier:
+        return f"Go fuck yourself {identifier}"

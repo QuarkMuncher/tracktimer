@@ -2,7 +2,7 @@ import argparse
 import sys
 import database as db
 
-parser = argparse.ArgumentParser(prog="what")
+parser = argparse.ArgumentParser(prog="tracktimer")
 
 
 def start_timer(a):
